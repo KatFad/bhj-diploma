@@ -22,10 +22,11 @@ class Modal {
    * (с помощью метода Modal.onClose)
    * */
   registerEvents() {
-    const closeButton = this.element.querySelectorAll('[data-dismiss="modal"]');
-    closeButton.onclick = e => {
-      this.onClose(e);
-    }
+    this.element.querySelectorAll('[data-dismiss="modal"]').forEach(element => {
+      element.onclick = e => {
+        this.onClose(e);
+      }
+    });;
   }
 
   /**
