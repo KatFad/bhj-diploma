@@ -5,38 +5,45 @@
 const createRequest = (opt = {}) => {
     const xhr = new XMLHttpRequest;
     let url = opt.url;
-    let formData;
+    const formData= new FormData;
     if (opt.method === 'GET') {
-        url = new URL(window.location.href.slice(0, -1) + opt.url);
-    
-        if (opt.data) {
-            for (let key in opt.data) {
-                    url.searchParams.set(key, opt.data[key]);
-            };
-        };
+        url += '?' + Object.entries(opt.data).map(
+            ([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(value)}`
+        ).join('&');
+       
     } else {
-        formData = new FormData;
-        if (opt.data) {
-            for (let key in opt.data) {
-                formData.append(key, opt.data[key]);
-            };
-        };    
+        Object.entries(opt.data).forEach(element => formData.append(...element));    
     };    
 
      try {
             xhr.open(opt.method, url);
             xhr.responseType = 'json';
-            xhr.send(formData);
+            if(options.method === 'GET') {
+                xhr.send();
+            } else {
+                xhr.send(formData);
+            }
     }
     catch (err) {
             callback(err);
     }    
     
-    xhr.addEventListener('load', () => {
-        if (xhr.status === 200) {
-            opt.callback(null, xhr.response);
-        } else {
-            opt.callback(xhr.statustext, null);
-        }
-        }); 
+    xhr.onreadystatechange = () => {
+        if(xhr.readyState === XMLHttpRequest.DONE){
+            let err = null;
+            let resp = null;
+      
+            if (xhr.status != 200) { 
+                alert(`Ошибка ${xhr.status}: ${xhr.statusText}`); 
+            } else { 
+                const rr = xhr.response;
+                if(rr && rr.success) {          //rr?.success
+                    resp = rr;
+                }else {
+                    err = rr;
+                } 
+              }
+            options.callback(err, resp)
+        };
+    }
 };
