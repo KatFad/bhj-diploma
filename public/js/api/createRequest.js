@@ -18,7 +18,7 @@ const createRequest = (opt = {}) => {
      try {
             xhr.open(opt.method, url);
             xhr.responseType = 'json';
-            if(options.method === 'GET') {
+            if(opt.method === 'GET') {
                 xhr.send();
             } else {
                 xhr.send(formData);
